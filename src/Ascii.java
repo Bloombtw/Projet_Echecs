@@ -19,4 +19,28 @@ public class Ascii {
     public static final String tourNoirAscii = "♜";
     public static final String dameNoirAscii = "♛";
     public static final String roiNoirAscii = "♚";
+
+
+    public static void remplirEchiquierString(String[][] échiquier) {
+        String caseNoir = "■";
+        String caseBlanc = "⬜";
+        for (int ligne = 0; ligne < 8; ligne++) { // Si case blanche alors somme de ligne + colonne est pair, sinon c'est une case noire.
+            for (int colonne = 0; colonne < 8; colonne++) {
+                if ((ligne + colonne) % 2 == 0) {
+                    échiquier[ligne][colonne] = caseBlanc;
+                } else {
+                    échiquier[ligne][colonne] = caseNoir;
+                }
+            }
+        }
+    }
+
+    public static void afficherEchiquierString(String[][] échiquier)  {
+        for (int ligne = 0; ligne < échiquier.length; ligne++) {
+            for (int colonne = 0; colonne < échiquier[ligne].length; colonne++) {
+                System.out.print(échiquier[ligne][colonne]);
+            }
+            System.out.println();
+        }
+    }
 }
