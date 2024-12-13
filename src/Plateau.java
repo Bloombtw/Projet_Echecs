@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Plateau {
 
     public static void afficherEnLigne(String c, int longueur) {
@@ -11,25 +13,8 @@ public class Plateau {
         }
     }
 
-    public static void afficherEchiquierChar(char[][] échiquier)  {
-        for (int ligne = 0; ligne < échiquier.length; ligne++) {
-            for (int colonne = 0; colonne < échiquier[ligne].length; colonne++) {
-                System.out.print(échiquier[ligne][colonne]);
-            }
-            System.out.println();
-        }
-    }
-
-    public static void afficherEchiquierString(String[][] échiquier)  {
-        for (int ligne = 0; ligne < échiquier.length; ligne++) {
-            for (int colonne = 0; colonne < échiquier[ligne].length; colonne++) {
-                System.out.print(échiquier[ligne][colonne]);
-            }
-            System.out.println();
-        }
-    }
     // Création des contours de l'échiquier
-    public static void contoursechiquier(char[][] echiquier) {
+    public static void afficherEchiquier(char[][] echiquier) {
 
         int ligne = 0;
         for (int i = 0; i < 8; i++) {
@@ -164,9 +149,11 @@ public class Plateau {
             }
         }
     }
-    public static void contoursechiquierString(String[][] echiquier) {
+    public static void afficherEchiquierString(String[][] echiquier) {
 
         int ligne = 0;
+        int compteur = 8;
+        System.out.println("       A             B             C             D             E             F             G             H");
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 System.out.print("--------------");
@@ -176,9 +163,89 @@ public class Plateau {
                 System.out.print("|      " + echiquier[ligne][j] + "      ");
             }
             ligne++;
-            System.out.println("|");
+            System.out.print("|  ");
+            System.out.println(compteur);
+            compteur --;
         }
         afficherEnLigne("-",112);
         System.out.println("+");
     }
+
+    // Uniquement envoyer un String de longueur 2 ex : "A6" -> renvoie la position en coordonnées java du tableau. Tjrs en suivant l'ex,
+    // le programme renvoie un tab de int de longueur 2 : { 0, 5 }
+    public static int[] traduisCoordonnées(String coordonneesEchecs) {
+        int[] coordonnees = new int[2];
+        char coordonnee1 = coordonneesEchecs.charAt(0); // tjrs dans l'exemple du dessus, prend le A
+        char coordonnee2 = coordonneesEchecs.charAt(1); // Prends le 6
+        switch (coordonnee1) {
+            case 'A':
+                coordonnees[1] = 0;
+                break;
+            case 'B':
+                coordonnees[1] = 1;
+                break;
+            case 'C':
+                coordonnees[1] = 2;
+                break;
+            case 'D':
+                coordonnees[1] = 3;
+                break;
+            case 'E':
+                coordonnees[1] = 4;
+                break;
+            case 'F':
+                coordonnees[1] = 5;
+                break;
+            case 'G':
+                coordonnees[1] = 6;
+                break;
+            case 'H':
+                coordonnees[1] = 7;
+                break;
+        }
+        switch (coordonnee2) {
+            case '1':
+                coordonnees[0] = 7;
+                break;
+            case '2':
+                coordonnees[0] = 6;
+                break;
+            case '3':
+                coordonnees[0] = 5;
+                break;
+            case '4':
+                coordonnees[0] = 4;
+                break;
+            case '5':
+                coordonnees[0] = 3;
+                break;
+            case '6':
+                coordonnees[0] = 2;
+                break;
+            case '7':
+                coordonnees[0] = 1;
+                break;
+            case '8':
+                coordonnees[0] = 0;
+                break;
+        }
+        return coordonnees;
+    }
+
+    public static void coordonneeEstJuste(String choix) {
+        Scanner sc = new Scanner(System.in);
+        if (!(choix.length() > 0 && choix.charAt(0) >= 'A' && choix.charAt(0) <= 'H') || (!(choix.length() > 0 && choix.charAt(1) >= '0' && choix.charAt(1) <= '8')) || (choix.length() > 2)) {
+            System.out.println("Erreur, vous devez rentrer une coordonnée comme 'A4' par exemple.");
+            System.out.println("Rentrez une nouvelle valeur : ");
+            choix = sc.nextLine();
+        }
+    }
+
+    public static void metAJourLePlateauEnAsciiEtLaffiche() {
+        Main.echiquierString = Plateau.transformationDuCharEnAscii(Main.echiquier);
+        Plateau.afficherEchiquierString(Main.echiquierString);
+    }
+
 }
+
+
