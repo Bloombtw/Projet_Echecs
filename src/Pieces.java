@@ -1,117 +1,219 @@
 import java.util.Scanner;
-
 public class Pieces {
+    //ajt des constantes pieces et destination ici
+    public static boolean estPieceAlliee(char piece, char destination) {
+        //piece allié si deux pions majuscules(noirs) ou minuscules(blancs)
+        return destination != ' ' && ((Character.isUpperCase(piece) && Character.isUpperCase(destination))
+                || (Character.isLowerCase(piece) && Character.isLowerCase(destination)));
+    }
 
-    public static class Pion {
+    public static boolean obstacle(char[][] echiquier, int ligneD, int colonneD, int ligneA, int colonneA) {
+        int directionLigne = (ligneA > ligneD) ? 1 : (ligneA < ligneD) ? -1 : 0;
+        int directionColonne = (colonneA > colonneD) ? 1 : (colonneA < colonneD) ? -1 : 0;
 
-        public static void deplacementPionNoir(char[][] échiquier, int[] coordonnées, int[] nouvellesCoordonnées) { // Méthode pour faire avancer le pion d'une case
-            int anciennescoordonnées[] = {coordonnées[0], coordonnées[1]};
-            int ecart = nouvellesCoordonnées[0] - coordonnées[0];
-            boolean peutAvancerDeDeuxCases = false;
-            if (coordonnées[0] == 1) {
-                peutAvancerDeDeuxCases = true;
+        int ligneCourante = ligneD + directionLigne;
+        int colonneCourante = colonneD + directionColonne;
+
+        // Parcours des cases entre la position actuelle et la destination
+        while (ligneCourante != ligneA || colonneCourante != colonneA) {
+            if (echiquier[ligneCourante][colonneCourante] != ' ') {
+                return true; // Obstacle détecté
             }
-            if (échiquier[nouvellesCoordonnées[0]][nouvellesCoordonnées[1]] != ' ') {
-                System.out.println("Mouvement impossible, la case désirée est occupée.");
-                return;
-            }
-            else if (nouvellesCoordonnées[1] != coordonnées[1]) {
-                System.out.println("Mouvement impossible, un pion ne peut avancer qu'en ligne.");
-                return;
-            }
-            else if (ecart < 0) {
-                System.out.println("Mouvement impossible, votre pion ne peut pas reculer.");
-                return;
-            }
-            else if (ecart > 1 && peutAvancerDeDeuxCases == false) {
-                System.out.println("Mouvement impossible, votre pion ne peut pas avancer de plus d'une case");
-                return;
-            }
-            else if (ecart > 2 && peutAvancerDeDeuxCases == true) {
-                System.out.println("Votre pion ne peut pas avancer de plus de deux cases lorsqu'il n'a jamais été bougé.");
-                return;
-            }
-            else {
-                échiquier[nouvellesCoordonnées[0]][nouvellesCoordonnées[1]] = échiquier[coordonnées[0]][coordonnées[1]];
-                échiquier[anciennescoordonnées[0]][anciennescoordonnées[1]] = ' ';
-            }
+            ligneCourante += directionLigne;
+            colonneCourante += directionColonne;
+        }
+        return false; // Pas d'obstacle
+    }
+
+    public static int[] mouvementBasiquePionBlanc(char[][] échiquier, int[] coordonnées) { // Méthode pour faire avancer le pion d'une case
+        int anciennescoordonnées[] = {coordonnées[0], coordonnées[1]};
+        int ligne = coordonnées[0];
+        int colonne = coordonnées[1];
+
+        if (échiquier[ligne - 1][colonne] != ' ') {
+            System.out.println("Mouvement impossible, la case désirée est occupée.");
+            return anciennescoordonnées;
+        } else {
+            échiquier[ligne - 1][colonne] = échiquier[ligne][colonne];
+            échiquier[ligne][colonne] = ' ';
+            coordonnées[0] = ligne;
+            return coordonnées;
+        }
+    }
+    public static int[] mouvementBasiquePionNoir(char[][] échiquier, int[] coordonnées) {
+        int anciennescoordonnées[] = {coordonnées[0], coordonnées[1]};
+        int ligne = coordonnées[0];
+        int colonne = coordonnées[1];
+
+        if (échiquier[ligne - 1][colonne] != ' ') {
+            System.out.println("Mouvement impossible, la case désirée est occupée.");
+            return anciennescoordonnées;
+        } else {
+            échiquier[ligne - 1][colonne] = échiquier[ligne][colonne];
+            échiquier[ligne][colonne] = ' ';
+            coordonnées[0] = ligne;
+            return coordonnées;
         }
     }
 
 
-
-    //TOUR
     public static void deplacementTour(char[][] echiquier, int[] coordonnees, int[] nouvellesCoordonnees) {
-        // Vérification est occupée par une pièce alliée
-        if (echiquier[coordonnees[0]][coordonnees[1]] == echiquier[nouvellesCoordonnees[0]][nouvellesCoordonnees[1]]) {
+        char piece = echiquier[coordonnees[0]][coordonnees[1]];
+        char destination = echiquier[nouvellesCoordonnees[0]][nouvellesCoordonnees[1]];
+
+        //occupée par une pièce alliée ?
+        if (destination != ' ' && ((Character.isUpperCase(piece) && Character.isUpperCase(destination))
+                || (Character.isLowerCase(piece) && Character.isLowerCase(destination)))) {
             System.out.println("Mouvement impossible : une pièce alliée occupe la case de destination.");
             return;
         }
-        // Vérification des obstacles sur le chemin
-        if (coordonnees[0] == nouvellesCoordonnees[0]) { // Mouvement horizontal
-            int direction = (nouvellesCoordonnees[1] > coordonnees[1]) ? 1 : -1;
-            for (int i = coordonnees[1] + direction; i != nouvellesCoordonnees[1]; i += direction) {
-                if (echiquier[coordonnees[0]][i] != ' ') {
-                    System.out.println("Mouvement impossible : obstacle détecté sur le chemin.");
-                    return;
-                }
+
+        //obstacle ?
+        if (coordonnees[0] == nouvellesCoordonnees[0]) { // Déplacement horizontal
+            int directionColonne = (nouvellesCoordonnees[1] > coordonnees[1]) ? 1 : -1;
+            if (obstacle(echiquier, coordonnees[0], coordonnees[1], nouvellesCoordonnees[0], nouvellesCoordonnees[1])) {
+                System.out.println("Mouvement impossible : obstacle détecté sur le chemin.");
+                return;
             }
-        } else if (coordonnees[1] == nouvellesCoordonnees[1]) { // Mouvement vertical
-            int direction = (nouvellesCoordonnees[0] > coordonnees[0]) ? 1 : -1;
-            for (int i = coordonnees[0] + direction; i != nouvellesCoordonnees[0]; i += direction) {
-                if (echiquier[i][coordonnees[1]] != ' ') {
-                    System.out.println("Mouvement impossible : obstacle détecté sur le chemin.");
-                    return;
-                }
+        } else if (coordonnees[1] == nouvellesCoordonnees[1]) { // Déplacement vertical
+            int directionLigne = (nouvellesCoordonnees[0] > coordonnees[0]) ? 1 : -1;
+            if (obstacle(echiquier, coordonnees[0], coordonnees[1], nouvellesCoordonnees[0], nouvellesCoordonnees[1])) {
+                System.out.println("Mouvement impossible : obstacle détecté sur le chemin.");
+                return;
             }
+        } else { // Ni horizontal ni vertical
+            System.out.println("Mouvement invalide pour une tour : uniquement horizontal ou vertical.");
+            return;
         }
-        // Déplacement de la tour
-        echiquier[nouvellesCoordonnees[0]][nouvellesCoordonnees[1]] = echiquier[coordonnees[0]][coordonnees[1]];
+        echiquier[nouvellesCoordonnees[0]][nouvellesCoordonnees[1]] = piece;
+        echiquier[coordonnees[0]][coordonnees[1]] = ' ';
+    }
+
+    public static void deplacementFou(char[][] echiquier, int[] coordonnees, int[] nouvellesCoordonnees) {
+        char piece = echiquier[coordonnees[0]][coordonnees[1]];
+        char destination = echiquier[nouvellesCoordonnees[0]][nouvellesCoordonnees[1]];
+
+        //diagonale : soustraction positionLigne = soustraction positionColonne, valeur abs pour eviter les cas erreur
+        //ligneArrivé - ligneDépart = colonneDépart - colonneArrivé
+        if (Math.abs(nouvellesCoordonnees[0] - coordonnees[0]) != Math.abs(nouvellesCoordonnees[1] - coordonnees[1])) {
+            System.out.println("Mouvement invalide : le fou ne peut se déplacer que sur une diagonale.");
+            return;
+        }
+
+        // Vérification si la case de destination est occupée par une pièce alliée
+        if (estPieceAlliee(piece, destination)) {
+            System.out.println("Mouvement impossible : une pièce alliée occupe la case de destination.");
+            return;
+        }
+
+        // Vérification des obstacles (diagonalement)
+        if (obstacle(echiquier, coordonnees[0], coordonnees[1], nouvellesCoordonnees[0], nouvellesCoordonnees[1])) {
+            System.out.println("Mouvement impossible : obstacle détecté sur le chemin.");
+            return;
+        }
+        echiquier[nouvellesCoordonnees[0]][nouvellesCoordonnees[1]] = piece;
         echiquier[coordonnees[0]][coordonnees[1]] = ' ';
     }
 
 
-    //FOU
-    public static int[] deplacementFou(char[][] echiquier, int[] coordonnees, int nouvelleLigne, int nouvelleColonne) {
-        int[] anciennesCoordonnees = {coordonnees[0], coordonnees[1]};
-        int ligne =coordonnees[0];
-        int colonne =coordonnees[1];
+    public static void deplacementCavalier(char[][] echiquier, int[] coordonnées, int[] nouvellesCoordonnées) {
+        char piece = echiquier[coordonnées[0]][coordonnées[1]];
+        char destination = echiquier[nouvellesCoordonnées[0]][nouvellesCoordonnées[1]];
 
-        //mouvement diagonale
-        if (Math.abs(nouvelleLigne - ligne) != Math.abs(nouvelleColonne - colonne)) {
-            System.out.println("Mouvement invalide : le fou ne peut se déplacer qu'en diagonale.");
-            return anciennesCoordonnees;
-        }
-        // Vérification si la case de destination est occupée par une pièce alliée
-        if (echiquier[ligne][colonne]== echiquier[nouvelleLigne][nouvelleColonne]
-                && echiquier[nouvelleLigne][nouvelleColonne] != ' ') {
+        if (estPieceAlliee(piece, destination)) {
             System.out.println("Mouvement impossible : une pièce alliée occupe la case de destination.");
-            return anciennesCoordonnees;
+            return;
         }
-        // Déplacement de la pièce
-        echiquier[nouvelleLigne][nouvelleColonne] = echiquier[ligne][colonne];
-        echiquier[ligne][colonne] = ' ';
-        ligne = nouvelleLigne;
-        colonne = nouvelleColonne;
 
-        return coordonnees;
+        //mouvement en "L"
+        int deltaLigne = Math.abs(nouvellesCoordonnées[0] - coordonnées[0]);
+        int deltaColonne = Math.abs(nouvellesCoordonnées[1] - coordonnées[1]);
+
+        if ((deltaLigne == 2 && deltaColonne == 1) || (deltaLigne == 1 && deltaColonne == 2)) {
+            echiquier[nouvellesCoordonnées[0]][nouvellesCoordonnées[1]] = piece;
+            echiquier[coordonnées[0]][coordonnées[1]] = ' ';
+        } else {
+            System.out.println("Mouvement invalide : un cavalier se déplace en 'L'.");
+        }
     }
 
-    //Cavalier
-    public static int[] deplacementCavalier(char[][] echiquier, int[] coordonnees, int nouvelleLigne, int nouvelleColonne){
-        int[] anciennesCoordonnees = {coordonnees[0], coordonnees[1]};
-        int ligne =coordonnees[0];
-        int colonne =coordonnees[1];
+    public static void deplacementReine(char[][] echiquier, int[] coordonnées, int[] nouvellesCoordonnées) {
+        char piece = echiquier[coordonnées[0]][coordonnées[1]];
+        char destination = echiquier[nouvellesCoordonnées[0]][nouvellesCoordonnées[1]];
 
+        if (estPieceAlliee(piece,destination)) {
+            System.out.println("Mouvement impossible : une pièce alliée occupe la case de destination.");
+            return;
+        }
 
-        //2 case horizontale ou verticale et 1 vers la droite ou la gauche
-        // Déplacement de la pièce
-        echiquier[nouvelleLigne][nouvelleColonne] = echiquier[ligne][colonne];
-        echiquier[ligne][colonne] = ' ';
-        ligne = nouvelleLigne;
-        colonne = nouvelleColonne;
-
-        return coordonnees;
+        // Verticale/horizontale ==Tour
+        if (coordonnées[0] == nouvellesCoordonnées[0] || coordonnées[1] == nouvellesCoordonnées[1]) {
+            if (obstacle(echiquier, coordonnées[0], coordonnées[1], nouvellesCoordonnées[0], nouvellesCoordonnées[1])) {
+                System.out.println("Mouvement impossible : une pièce bloque le chemin.");
+                return;
+            }
+            deplacementTour(echiquier, coordonnées, nouvellesCoordonnées);
+        }
+        //diagonale == Fou
+        else if (Math.abs(nouvellesCoordonnées[0] - coordonnées[0]) == Math.abs(nouvellesCoordonnées[1] - coordonnées[1])) {
+            if (obstacle(echiquier, coordonnées[0], coordonnées[1], nouvellesCoordonnées[0], nouvellesCoordonnées[1])) {
+                System.out.println("Mouvement impossible : une pièce bloque le chemin.");
+                return;
+            }
+            deplacementFou(echiquier, coordonnées,nouvellesCoordonnées);
+        }
+        else {
+            System.out.println("Mouvement invalide : la reine ne peut se déplacer que horizontalement, verticalement ou en diagonale.");
+        }
     }
+
+    public static void deplacementRoi(char[][] echiquier, int[] coordonnées, int[] nouvellesCoordonnées) {
+        char piece = echiquier[coordonnées[0]][coordonnées[1]];
+        char destination = echiquier[nouvellesCoordonnées[0]][nouvellesCoordonnées[1]];
+
+        if (estPieceAlliee(piece,destination)) {
+            System.out.println("Mouvement impossible : une pièce alliée occupe la case de destination.");
+            return;
+        }
+
+        int deltaLigne = Math.abs(nouvellesCoordonnées[0] - coordonnées[0]);
+        int deltaColonne = Math.abs(nouvellesCoordonnées[1] - coordonnées[1]);
+
+        //se deplace d'une seule case peu importe la direction
+        if (deltaLigne <= 1 && deltaColonne <= 1) {
+            if (deltaLigne == 0 || deltaColonne == 0) {
+                if (obstacle(echiquier, coordonnées[0], coordonnées[1], nouvellesCoordonnées[0], nouvellesCoordonnées[1])) {
+                    System.out.println("Mouvement impossible : obstacle détecté sur le chemin.");
+                    return;
+                }
+            }
+            if (deltaLigne == deltaColonne) {
+                if (obstacle(echiquier, coordonnées[0], coordonnées[1], nouvellesCoordonnées[0], nouvellesCoordonnées[1])) {
+                    System.out.println("Mouvement impossible : obstacle détecté sur le chemin.");
+                    return;
+                }
+            }
+            /*deplacement qui le met en echec : pas de déplacement, faire une méthode boolean*/
+
+            echiquier[nouvellesCoordonnées[0]][nouvellesCoordonnées[1]] = piece;
+            echiquier[coordonnées[0]][coordonnées[1]] = ' ';
+        } else {
+            System.out.println("Mouvement invalide : le roi se déplace d'une seule case dans toutes les directions.");
+        }
+    }
+
+    public static void mangePieceAdverse(char[][] echiquier, int[] coordonnées, int[] nouvellesCoordonnées) {
+        char piece = echiquier[coordonnées[0]][coordonnées[1]];
+        char destination = echiquier[nouvellesCoordonnées[0]][nouvellesCoordonnées[1]];
+
+        if (destination != ' ' && !estPieceAlliee(piece,destination)) {
+            System.out.println("Une pièce ennemie a été capturée !");
+            echiquier[nouvellesCoordonnées[0]][nouvellesCoordonnées[1]] = ' ';
+        } else {
+            System.out.println("Aucune pièce adverse à capturer.");
+        }
+    }
+
 }
+
 
