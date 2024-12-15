@@ -25,34 +25,44 @@ public class Pieces {
         return false; // Pas d'obstacle
     }
 
-    public static int[] mouvementBasiquePionBlanc(char[][] échiquier, int[] coordonnées) { // Méthode pour faire avancer le pion d'une case
-        int anciennescoordonnées[] = {coordonnées[0], coordonnées[1]};
-        int ligne = coordonnées[0];
-        int colonne = coordonnées[1];
+    public static void deplacementPion(char[][] echiquier, int[] coordonnées, int[] nouvellesCoordonnées) {
+        int anciennesCoordonnées[] = {coordonnées[0], coordonnées[1]};
+        int ecart = nouvellesCoordonnées[0] - coordonnées[0];
+        boolean peutAvancerDeDeuxCases = false;
 
-        if (échiquier[ligne - 1][colonne] != ' ') {
-            System.out.println("Mouvement impossible, la case désirée est occupée.");
-            return anciennescoordonnées;
-        } else {
-            échiquier[ligne - 1][colonne] = échiquier[ligne][colonne];
-            échiquier[ligne][colonne] = ' ';
-            coordonnées[0] = ligne;
-            return coordonnées;
+        if (coordonnées[0] == 1) {
+            peutAvancerDeDeuxCases = true;
         }
-    }
-    public static int[] mouvementBasiquePionNoir(char[][] échiquier, int[] coordonnées) {
-        int anciennescoordonnées[] = {coordonnées[0], coordonnées[1]};
-        int ligne = coordonnées[0];
-        int colonne = coordonnées[1];
-
-        if (échiquier[ligne - 1][colonne] != ' ') {
+                                                                                    //modif pour ajt la fonciton directement ici
+        if (echiquier[nouvellesCoordonnées[0]][nouvellesCoordonnées[1]] != ' ' && !estPionAlliee(echiquier, coordonnées, nouvellesCoordonnées)) {
             System.out.println("Mouvement impossible, la case désirée est occupée.");
-            return anciennescoordonnées;
-        } else {
-            échiquier[ligne - 1][colonne] = échiquier[ligne][colonne];
-            échiquier[ligne][colonne] = ' ';
-            coordonnées[0] = ligne;
-            return coordonnées;
+            return;
+        }
+        else if (nouvellesCoordonnées[1] != coordonnées[1]) {
+            System.out.println("Mouvement impossible, un pion ne peut avancer qu'en ligne.");
+            return;
+        }
+        else if (ecart < 0) {
+            System.out.println("Mouvement impossible, votre pion ne peut pas reculer.");
+            return;
+        }
+        else if (ecart > 1 && !peutAvancerDeDeuxCases) {
+            System.out.println("Mouvement impossible, votre pion ne peut pas avancer de plus d'une case.");
+            return;
+        }
+        else if (ecart > 2 && peutAvancerDeDeuxCases) {
+            System.out.println("Votre pion ne peut pas avancer de plus de deux cases lorsqu'il n'a jamais été bougé.");
+            return;
+        }
+                            //modif pr ajt de la methode obstacle ici
+        else if (ecart == 2 && obstacle(echiquier, coordonnées[0], coordonnées[1], nouvellesCoordonnées[0], nouvellesCoordonnées[1])) {
+            System.out.println("Mouvement impossible, il y a un obstacle sur le chemin.");
+            return;
+        }
+        else {
+            echiquier[nouvellesCoordonnées[0]][nouvellesCoordonnées[1]] = echiquier[coordonnées[0]][coordonnées[1]];
+            echiquier[anciennesCoordonnées[0]][anciennesCoordonnées[1]] = ' ';
+            System.out.println("Le pion avance.");
         }
     }
 
