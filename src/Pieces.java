@@ -26,7 +26,7 @@ public class Pieces {
     }
 
     public static void deplacementPion(char[][] echiquier, int[] coordonnées, int[] nouvellesCoordonnées) {
-        int anciennesCoordonnées[] = {coordonnées[0], coordonnées[1]};
+        int [] anciennesCoordonnées= {coordonnées[0], coordonnées[1]};
         int ecart = nouvellesCoordonnées[0] - coordonnées[0];
         boolean peutAvancerDeDeuxCases = false;
 
@@ -34,7 +34,8 @@ public class Pieces {
             peutAvancerDeDeuxCases = true;
         }
                                                                                     //modif pour ajt la fonciton directement ici
-        if (echiquier[nouvellesCoordonnées[0]][nouvellesCoordonnées[1]] != ' ' && !estPionAlliee(echiquier, coordonnées, nouvellesCoordonnées)) {
+        if (echiquier[nouvellesCoordonnées[0]][nouvellesCoordonnées[1]] != ' '
+            && !estPieceAlliee(echiquier[coordonnées[0]][coordonnées[1]], echiquier[nouvellesCoordonnées[0]][nouvellesCoordonnées[1]])) {
             System.out.println("Mouvement impossible, la case désirée est occupée.");
             return;
         }
@@ -147,7 +148,7 @@ public class Pieces {
         }
     }
 
-    public static void deplacementReine(char[][] echiquier, int[] coordonnées, int[] nouvellesCoordonnées) {
+     public static void deplacementReine(char[][] echiquier, int[] coordonnées, int[] nouvellesCoordonnées) {
         char piece = echiquier[coordonnées[0]][coordonnées[1]];
         char destination = echiquier[nouvellesCoordonnées[0]][nouvellesCoordonnées[1]];
 
