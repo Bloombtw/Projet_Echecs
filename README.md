@@ -4,7 +4,7 @@ Description :
 This project is a chess game implemented in Java that runs entirely in the terminal. The program adheres to the constraint of avoiding Object-Oriented Programming (OOP) principles, showcasing the use of procedural programming techniques.
 
 Authors : 
-Anton Meimoun
+Anton Meimoun,
 Sorana Ndiaye
 
 
